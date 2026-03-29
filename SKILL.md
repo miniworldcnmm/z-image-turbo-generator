@@ -22,7 +22,7 @@ Always save the generated image to `/root/.openclaw/workspace/` (not `/tmp`) to 
    - Optional: negative prompt, width, height, seed
 4. Use these defaults unless the user asks otherwise:
    - `model=Tongyi-MAI/Z-Image-Turbo`
-   - `provider=wavespeed`
+   - No provider (uses HF Serverless Inference API with free daily GPU quota)
    - `width=1024`
    - `height=1024`
    - `num_inference_steps=9`
@@ -46,6 +46,15 @@ HF_TOKEN='<user token>' python scripts/generate_image.py \
   --output /root/.openclaw/workspace/zimage.png
 ```
 
+To use a paid inference provider instead of the free API:
+
+```bash
+HF_TOKEN='<user token>' python scripts/generate_image.py \
+  --prompt 'A cinematic panda astronaut on the moon' \
+  --output /root/.openclaw/workspace/zimage.png \
+  --provider wavespeed
+```
+
 Optional arguments:
 
 ```bash
@@ -54,12 +63,14 @@ Optional arguments:
 --height 1024
 --seed 42
 --num-inference-steps 9
+--provider wavespeed
 --guidance-scale 0.0
 ```
 
 ## Parameter Rules
 
 - Keep the model fixed to `Tongyi-MAI/Z-Image-Turbo` unless the user explicitly asks to change the skill.
+- By default, use the HF Serverless Inference API (free daily GPU quota). Only add `--provider` when the user explicitly requests a specific provider.
 - For this turbo model, prefer `guidance_scale=0.0` and `num_inference_steps=9` by default.
 - If the user gives only one dimension, keep the other at the default.
 - If the user gives no seed, omit the seed argument.

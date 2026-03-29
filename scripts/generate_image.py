@@ -33,8 +33,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--provider",
-        default="wavespeed",
-        help="Inference provider name. Defaults to wavespeed.",
+        default=None,
+        help="Optional inference provider name (e.g. wavespeed, fal-ai). "
+        "When omitted, uses HF Serverless Inference API (free daily GPU quota).",
     )
     parser.add_argument(
         "--negative-prompt",
@@ -124,7 +125,10 @@ def main() -> int:
             "Missing dependency huggingface_hub. Install with: pip install -r scripts/requirements.txt"
         ) from exc
 
-    client = InferenceClient(provider=args.provider, api_key=token)
+    client_kwargs = {"api_key": token}
+    if args.provider:
+        client_kwargs["provider"] = args.provider
+    client = InferenceClient(**client_kwargs)
 
     request_kwargs = {
         "model": args.model,
